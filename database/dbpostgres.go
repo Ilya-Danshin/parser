@@ -28,3 +28,12 @@ func (db *DBService) Init(settings *config.DbSettings) error {
 	db.db = _db
 	return nil
 }
+
+func (db *DBService) AddNewProduct(prod *Goods) error {
+	err := db.db.Create(prod).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
