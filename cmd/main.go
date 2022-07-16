@@ -3,6 +3,7 @@ package main
 import (
 	"Parser/config"
 	"Parser/database"
+	"Parser/ozonparser"
 	"log"
 )
 
@@ -23,4 +24,6 @@ func main() {
 		log.Fatal(err)
 	}
 
+	parser := ozonparser.NewParser()
+	err = parser.Init(settings.Parser, db)
 }

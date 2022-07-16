@@ -17,8 +17,14 @@ type DbSettings struct {
 	SSLMode  string
 }
 
+type ParserSettings struct {
+	Link string
+	Num  int
+}
+
 type Settings struct {
-	DB DbSettings
+	DB     *DbSettings
+	Parser *ParserSettings
 }
 
 func InitConfig() error {
@@ -41,8 +47,14 @@ func ReadConfig() (Settings, error) {
 		return Settings{}, err
 	}
 
+	parserSettings, err := readParserConfig()
+	if err != nil {
+		return Settings{}, err
+	}
+
 	return Settings{
-		DB: dbSettings,
+		DB:     &dbSettings,
+		Parser: &parserSettings,
 	}, nil
 }
 
@@ -88,5 +100,26 @@ func readDbConfig() (DbSettings, error) {
 		Name:     name,
 		Port:     port,
 		SSLMode:  sslMode,
+	}, nil
+}
+
+func readParserConfig() (ParserSettings, error) {
+	link, ok := os.LookupEnv("PARSE_LINK")
+	if !ok {
+		return ParserSettings{}, fmt.Errorf("env DB_SSL_MODE is not set")
+	}
+
+	_num, ok := os.LookupEnv("NUMBER_OF_PRODUCTS")
+	if !ok {
+		return ParserSettings{}, fmt.Errorf("env NUMBER_OF_PRODUCTS is not set")
+	}
+	num, err := strconv.Atoi(_num)
+	if err != nil {
+		return ParserSettings{}, err
+	}
+
+	return ParserSettings{
+		Link: link,
+		Num:  num,
 	}, nil
 }
