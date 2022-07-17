@@ -12,5 +12,5 @@ type Goods struct {
 
 type DBIFace interface {
 	Init(*config.DbSettings) error
-	AddNewProduct(*Goods) error
+	AddNewProducts([]*Goods) error
 }

@@ -29,7 +29,7 @@ func (db *DBService) Init(settings *config.DbSettings) error {
 	return nil
 }
 
-func (db *DBService) AddNewProduct(prod *Goods) error {
+func (db *DBService) AddNewProducts(prod []*Goods) error {
 	err := db.db.Create(prod).Error
 	if err != nil {
 		return err

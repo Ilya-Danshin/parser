@@ -58,15 +58,18 @@ func (p *Parser) Parse() error {
 		p.numOfProd = len(products)
 	}
 
+	var productsArr []*database.Goods
 	for i := 0; i < p.numOfProd; i++ {
 		product, err := getProductInfo(products[i])
 		if err != nil {
 			return err
 		}
-		err = p.db.AddNewProduct(product)
-		if err != nil {
-			return err
-		}
+		productsArr = append(productsArr, product)
+	}
+
+	err = p.db.AddNewProducts(productsArr)
+	if err != nil {
+		return err
 	}
 
 	return nil
