@@ -1,0 +1,14 @@
+FROM golang:latest
+
+RUN go version
+WORKDIR /parser
+
+COPY ./ ./
+RUN go install github.com/githubnemo/CompileDaemon@latest
+RUN go mod tidy
+RUN go mod vendor
+RUN go mod download
+
+ARG PATH_TO_ENV_FILE
+
+ENTRYPOINT CompileDaemon --build="go build -o parser ./cmd/main.go" --command=./parser

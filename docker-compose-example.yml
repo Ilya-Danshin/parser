@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    restart: on-failure
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - parser_network
+    ports:
+      - "8080:5432"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        window: 15m
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+
+  parser:
+    container_name: parser_app
+    build:
+      dockerfile: ./Docker
+      context: .
+    environment:
+      PATH_TO_ENV_FILE: ""
+    depends_on:
+      - postgres
+    networks:
+      - parser_network
+
+networks:
+  parser_network:
+    driver: bridge
