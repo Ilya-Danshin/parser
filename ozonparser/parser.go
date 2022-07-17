@@ -3,6 +3,7 @@ package ozonparser
 import (
 	"Parser/config"
 	"Parser/database"
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -22,27 +23,15 @@ func NewParser() *Parser {
 }
 
 func (p *Parser) Init(settings *config.ParserSettings, db database.DBIFace) error {
-	doc, err := htmlquery.LoadURL(settings.Link)
-	//doc, err := htmlquery.LoadDoc("C:\\Users\\iljad\\Desktop\\test.html")
-	//req, _ := http.NewRequest("GET", settings.Link, nil)
-	//client := &http.Client{Timeout: time.Second * 5}
-	//resp, err := client.Do(req)
-	//if err != nil {
-	//	return err
-	//}
-	//defer resp.Body.Close()
-	//
-	//var r []byte
-	//_, err = resp.Body.Read(r)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//hmtlDoc := string(r)
-	//splited := strings.Split(hmtlDoc, "<body>")
-	//splited = strings.Split(splited[1], "</body>")
-	//body := splited[0]
-	//doc, err := htmlquery.Parse(strings.NewReader(body))
+	var doc *html.Node
+	var err error
+
+	if settings.Link != "" {
+		doc, err = htmlquery.LoadURL(settings.Link) // Doesn't work because of bots protection
+	} else {
+		doc, err = htmlquery.LoadDoc(settings.Path)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -57,6 +46,15 @@ func (p *Parser) Parse() error {
 	products, err := htmlquery.QueryAll(p.doc, "//*[@class=\"ju3 u3j\"]")
 	if err != nil {
 		return err
+	}
+
+	if len(products) == 0 {
+		return fmt.Errorf("there is no products")
+	}
+
+	if len(products) < p.numOfProd {
+		// If number of products less than number of requested products then save to database all products
+		p.numOfProd = len(products)
 	}
 
 	for i := 0; i < p.numOfProd; i++ {
@@ -119,6 +117,9 @@ func getUrlImg(product *html.Node) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if img == nil {
+		return "", fmt.Errorf("can't find img")
+	}
 
 	return img.FirstChild.Data, nil
 }
@@ -127,6 +128,9 @@ func getName(product *html.Node) (string, error) {
 	name, err := htmlquery.Query(product, "//*[@class=\"j4u\"]/a/span/span")
 	if err != nil {
 		return "", err
+	}
+	if name == nil {
+		return "", fmt.Errorf("can't find name")
 	}
 
 	return name.FirstChild.Data, nil
@@ -137,6 +141,9 @@ func getPrice(product *html.Node) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if len(price) == 0 {
+		return "", fmt.Errorf("can't find price")
+	}
 
 	return price[0].FirstChild.Data, nil
 }
@@ -145,6 +152,9 @@ func getUrl(product *html.Node) (string, error) {
 	urlNode, err := htmlquery.Query(product, "/a/@href")
 	if err != nil {
 		return "", err
+	}
+	if urlNode == nil {
+		return "", fmt.Errorf("can't find url")
 	}
 
 	return urlNode.FirstChild.Data, nil

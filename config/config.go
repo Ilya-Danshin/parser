@@ -19,6 +19,7 @@ type DbSettings struct {
 
 type ParserSettings struct {
 	Link string
+	Path string
 	Num  int
 }
 
@@ -104,9 +105,17 @@ func readDbConfig() (DbSettings, error) {
 }
 
 func readParserConfig() (ParserSettings, error) {
+	var (
+		link string
+		path string
+	)
+
 	link, ok := os.LookupEnv("PARSE_LINK")
 	if !ok {
-		return ParserSettings{}, fmt.Errorf("env DB_SSL_MODE is not set")
+		path, ok = os.LookupEnv("PARSE_PATH")
+		if !ok {
+			return ParserSettings{}, fmt.Errorf("one of env PARSE_LINK and PARSE_PATH should be set")
+		}
 	}
 
 	_num, ok := os.LookupEnv("NUMBER_OF_PRODUCTS")
@@ -120,6 +129,7 @@ func readParserConfig() (ParserSettings, error) {
 
 	return ParserSettings{
 		Link: link,
+		Path: path,
 		Num:  num,
 	}, nil
 }
