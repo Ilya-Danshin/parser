@@ -3,12 +3,16 @@ module Parser
 go 1.18
 
 require (
+	github.com/antchfx/htmlquery v1.2.5
 	github.com/joho/godotenv v1.4.0
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.8
 )
 
 require (
+	github.com/antchfx/xpath v1.2.1 // indirect
+	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.12.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

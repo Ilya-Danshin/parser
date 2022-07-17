@@ -10,6 +10,6 @@ CREATE TABLE goods
     name TEXT,
     url TEXT,
     url_img TEXT,
-    price FLOAT
+    price TEXT
 );
 
