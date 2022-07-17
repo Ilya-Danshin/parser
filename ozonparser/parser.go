@@ -1,12 +1,13 @@
 package ozonparser
 
 import (
-	"Parser/config"
-	"Parser/database"
 	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"Parser/config"
+	"Parser/database"
 
 	"github.com/antchfx/htmlquery"
 	"golang.org/x/net/html"
